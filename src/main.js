@@ -123,9 +123,9 @@ export class MuJoCoDemo {
       return;
     }
 
-    if (!this.params["paused"]) {
-      let timestep = this.model.opt.timestep;
-      if (timeMS - this.mujoco_time > 35.0) { this.mujoco_time = timeMS; }
+    // if (!this.params["paused"]) {
+    //   let timestep = this.model.opt.timestep;
+    //   if (timeMS - this.mujoco_time > 35.0) { this.mujoco_time = timeMS; }
     //   while (this.mujoco_time < timeMS) {
 
     //     // Automatic car animation for car scene
@@ -245,7 +245,7 @@ export class MuJoCoDemo {
     // }
 
     // Draw Tendons and Flex verts
-    drawTendonsAndFlex(this.mujocoRoot, this.model, this.data);
+    // drawTendonsAndFlex(this.mujocoRoot, this.model, this.data);
 
     // Render!
     this.renderer.render( this.scene, this.camera );
