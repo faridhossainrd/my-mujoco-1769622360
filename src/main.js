@@ -126,123 +126,123 @@ export class MuJoCoDemo {
     if (!this.params["paused"]) {
       let timestep = this.model.opt.timestep;
       if (timeMS - this.mujoco_time > 35.0) { this.mujoco_time = timeMS; }
-      while (this.mujoco_time < timeMS) {
+    //   while (this.mujoco_time < timeMS) {
 
-        // Automatic car animation for car scene
-        // if (this.params["scene"] === "car.xml") {
-        //   const cycleTime = 6.0; // Total cycle time in seconds
-        //   const phase = (this.data.time % cycleTime);
+    //     // Automatic car animation for car scene
+    //     if (this.params["scene"] === "car.xml") {
+    //       const cycleTime = 6.0; // Total cycle time in seconds
+    //       const phase = (this.data.time % cycleTime);
 
-        //   if (phase < 0.5) {
-        //     // Start: stationary
-        //     this.data.ctrl[0] = 0;
-        //   } else if (phase < 2.5) {
-        //     // Backward phase (reverse first)
-        //     this.data.ctrl[0] = -0.8;
-        //   } else if (phase < 3.0) {
-        //     // Slow down
-        //     this.data.ctrl[0] = 0;
-        //   } else if (phase < 3.5) {
-        //     // Brief pause
-        //     this.data.ctrl[0] = 0;
-        //   } else if (phase < 5.5) {
-        //     // Forward phase
-        //     this.data.ctrl[0] = 0.8;
-        //   } else {
-        //     // Stop
-        //     this.data.ctrl[0] = 0;
-        //   }
-        //   // Keep steering at 0
-        //   if (this.data.ctrl.length > 1) {
-        //     this.data.ctrl[1] = 0;
-        //   }
-        // }
+    //       if (phase < 0.5) {
+    //         // Start: stationary
+    //         this.data.ctrl[0] = 0;
+    //       } else if (phase < 2.5) {
+    //         // Backward phase (reverse first)
+    //         this.data.ctrl[0] = -0.8;
+    //       } else if (phase < 3.0) {
+    //         // Slow down
+    //         this.data.ctrl[0] = 0;
+    //       } else if (phase < 3.5) {
+    //         // Brief pause
+    //         this.data.ctrl[0] = 0;
+    //       } else if (phase < 5.5) {
+    //         // Forward phase
+    //         this.data.ctrl[0] = 0.8;
+    //       } else {
+    //         // Stop
+    //         this.data.ctrl[0] = 0;
+    //       }
+    //       // Keep steering at 0
+    //       if (this.data.ctrl.length > 1) {
+    //         this.data.ctrl[1] = 0;
+    //       }
+    //     }
 
-        // Jitter the control state with gaussian random noise
-        if (this.params["ctrlnoisestd"] > 0.0) {
-          let rate  = Math.exp(-timestep / Math.max(1e-10, this.params["ctrlnoiserate"]));
-          let scale = this.params["ctrlnoisestd"] * Math.sqrt(1 - rate * rate);
-          let currentCtrl = this.data.ctrl;
-          for (let i = 0; i < currentCtrl.length; i++) {
-            currentCtrl[i] = rate * currentCtrl[i] + scale * standardNormal();
-            this.params["Actuator " + i] = currentCtrl[i];
-          }
-        }
+    //     // Jitter the control state with gaussian random noise
+    //     if (this.params["ctrlnoisestd"] > 0.0) {
+    //       let rate  = Math.exp(-timestep / Math.max(1e-10, this.params["ctrlnoiserate"]));
+    //       let scale = this.params["ctrlnoisestd"] * Math.sqrt(1 - rate * rate);
+    //       let currentCtrl = this.data.ctrl;
+    //       for (let i = 0; i < currentCtrl.length; i++) {
+    //         currentCtrl[i] = rate * currentCtrl[i] + scale * standardNormal();
+    //         this.params["Actuator " + i] = currentCtrl[i];
+    //       }
+    //     }
 
-        // Clear old perturbations, apply new ones.
-        for (let i = 0; i < this.data.qfrc_applied.length; i++) { this.data.qfrc_applied[i] = 0.0; }
-        let dragged = this.dragStateManager.physicsObject;
-        if (dragged && dragged.bodyID) {
-          for (let b = 0; b < this.model.nbody; b++) {
-            if (this.bodies[b]) {
-              getPosition  (this.data.xpos , b, this.bodies[b].position);
-              getQuaternion(this.data.xquat, b, this.bodies[b].quaternion);
-              this.bodies[b].updateWorldMatrix();
-            }
-          }
-          let bodyID = dragged.bodyID;
-          this.dragStateManager.update(); // Update the world-space force origin
-          let force = toMujocoPos(this.dragStateManager.currentWorld.clone().sub(this.dragStateManager.worldHit).multiplyScalar(this.model.body_mass[bodyID] * 250));
-          let point = toMujocoPos(this.dragStateManager.worldHit.clone());
-          mujoco.mj_applyFT(this.model, this.data, [force.x, force.y, force.z], [0, 0, 0], [point.x, point.y, point.z], bodyID, this.data.qfrc_applied);
+    //     // Clear old perturbations, apply new ones.
+    //     for (let i = 0; i < this.data.qfrc_applied.length; i++) { this.data.qfrc_applied[i] = 0.0; }
+    //     let dragged = this.dragStateManager.physicsObject;
+    //     if (dragged && dragged.bodyID) {
+    //       for (let b = 0; b < this.model.nbody; b++) {
+    //         if (this.bodies[b]) {
+    //           getPosition  (this.data.xpos , b, this.bodies[b].position);
+    //           getQuaternion(this.data.xquat, b, this.bodies[b].quaternion);
+    //           this.bodies[b].updateWorldMatrix();
+    //         }
+    //       }
+    //       let bodyID = dragged.bodyID;
+    //       this.dragStateManager.update(); // Update the world-space force origin
+    //       let force = toMujocoPos(this.dragStateManager.currentWorld.clone().sub(this.dragStateManager.worldHit).multiplyScalar(this.model.body_mass[bodyID] * 250));
+    //       let point = toMujocoPos(this.dragStateManager.worldHit.clone());
+    //       mujoco.mj_applyFT(this.model, this.data, [force.x, force.y, force.z], [0, 0, 0], [point.x, point.y, point.z], bodyID, this.data.qfrc_applied);
 
-          // TODO: Apply pose perturbations (mocap bodies only).
-        }
+    //       // TODO: Apply pose perturbations (mocap bodies only).
+    //     }
 
-        mujoco.mj_step(this.model, this.data);
+    //     mujoco.mj_step(this.model, this.data);
 
-        this.mujoco_time += timestep * 1000.0;
-      }
+    //     this.mujoco_time += timestep * 1000.0;
+    //   }
 
-    } else if (this.params["paused"]) {
-      this.dragStateManager.update(); // Update the world-space force origin
-      let dragged = this.dragStateManager.physicsObject;
-      if (dragged && dragged.bodyID) {
-        let b = dragged.bodyID;
-        getPosition  (this.data.xpos , b, this.tmpVec , false); // Get raw coordinate from MuJoCo
-        getQuaternion(this.data.xquat, b, this.tmpQuat, false); // Get raw coordinate from MuJoCo
+    // } else if (this.params["paused"]) {
+    //   this.dragStateManager.update(); // Update the world-space force origin
+    //   let dragged = this.dragStateManager.physicsObject;
+    //   if (dragged && dragged.bodyID) {
+    //     let b = dragged.bodyID;
+    //     getPosition  (this.data.xpos , b, this.tmpVec , false); // Get raw coordinate from MuJoCo
+    //     getQuaternion(this.data.xquat, b, this.tmpQuat, false); // Get raw coordinate from MuJoCo
 
-        let offset = toMujocoPos(this.dragStateManager.currentWorld.clone()
-          .sub(this.dragStateManager.worldHit).multiplyScalar(0.3));
-        if (this.model.body_mocapid[b] >= 0) {
-          // Set the root body's mocap position...
-          console.log("Trying to move mocap body", b);
-          let addr = this.model.body_mocapid[b] * 3;
-          let pos  = this.data.mocap_pos;
-          pos[addr+0] += offset.x;
-          pos[addr+1] += offset.y;
-          pos[addr+2] += offset.z;
-        } else {
-          // Set the root body's position directly...
-          let root = this.model.body_rootid[b];
-          let addr = this.model.jnt_qposadr[this.model.body_jntadr[root]];
-          let pos  = this.data.qpos;
-          pos[addr+0] += offset.x;
-          pos[addr+1] += offset.y;
-          pos[addr+2] += offset.z;
-        }
-      }
+    //     let offset = toMujocoPos(this.dragStateManager.currentWorld.clone()
+    //       .sub(this.dragStateManager.worldHit).multiplyScalar(0.3));
+    //     if (this.model.body_mocapid[b] >= 0) {
+    //       // Set the root body's mocap position...
+    //       console.log("Trying to move mocap body", b);
+    //       let addr = this.model.body_mocapid[b] * 3;
+    //       let pos  = this.data.mocap_pos;
+    //       pos[addr+0] += offset.x;
+    //       pos[addr+1] += offset.y;
+    //       pos[addr+2] += offset.z;
+    //     } else {
+    //       // Set the root body's position directly...
+    //       let root = this.model.body_rootid[b];
+    //       let addr = this.model.jnt_qposadr[this.model.body_jntadr[root]];
+    //       let pos  = this.data.qpos;
+    //       pos[addr+0] += offset.x;
+    //       pos[addr+1] += offset.y;
+    //       pos[addr+2] += offset.z;
+    //     }
+    //   }
 
-      mujoco.mj_forward(this.model, this.data);
-    }
+    //   mujoco.mj_forward(this.model, this.data);
+    // }
 
-    // Update body transforms.
-    for (let b = 0; b < this.model.nbody; b++) {
-      if (this.bodies[b]) {
-        getPosition  (this.data.xpos , b, this.bodies[b].position);
-        getQuaternion(this.data.xquat, b, this.bodies[b].quaternion);
-        this.bodies[b].updateWorldMatrix();
-      }
-    }
+    // // Update body transforms.
+    // for (let b = 0; b < this.model.nbody; b++) {
+    //   if (this.bodies[b]) {
+    //     getPosition  (this.data.xpos , b, this.bodies[b].position);
+    //     getQuaternion(this.data.xquat, b, this.bodies[b].quaternion);
+    //     this.bodies[b].updateWorldMatrix();
+    //   }
+    // }
 
-    // Update light transforms.
-    for (let l = 0; l < this.model.nlight; l++) {
-      if (this.lights[l]) {
-        getPosition(this.data.light_xpos, l, this.lights[l].position);
-        getPosition(this.data.light_xdir, l, this.tmpVec);
-        this.lights[l].lookAt(this.tmpVec.add(this.lights[l].position));
-      }
-    }
+    // // Update light transforms.
+    // for (let l = 0; l < this.model.nlight; l++) {
+    //   if (this.lights[l]) {
+    //     getPosition(this.data.light_xpos, l, this.lights[l].position);
+    //     getPosition(this.data.light_xdir, l, this.tmpVec);
+    //     this.lights[l].lookAt(this.tmpVec.add(this.lights[l].position));
+    //   }
+    // }
 
     // Draw Tendons and Flex verts
     drawTendonsAndFlex(this.mujocoRoot, this.model, this.data);
